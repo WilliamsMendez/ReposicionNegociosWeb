@@ -1,55 +1,56 @@
-<h1>Gestion de Registros de Carros</h1>
-<section class="WWFilter"></section>
+<h1>Gestión de Registro de Vehiculos</h1>
+<section class="WWFilter">
 
-<section class="WWList">
-    <table>
-        <thead>
-            <tr>
-                <th>Id Registro</th>
-                <th>Placa de carro</th>
-                <th>Modelo de carro</th>
-                <th>Año de carro</th>
-                <th>Bin de motor</th>
-
-                <th>
-                    {{if new_enable}}
-                    <button id="btnAdd">Nuevo</button>
-                    {{endif new_enable}}
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            {{forecha cars}}
-            <tr>
-                <td>{{registro_id}}</td>
-                <td><a href="index.php?page=Mnt_Car&mode=DSP&registro_id={{registro_id}}">{{placa_carro}}</a></td>
-                <td>{{modelo_carro}}</td>
-                <td>{{year_carro}}</td>
-                <td>{{bin_carro}}</td>
-                <td>
-                    {{if ~edit_enabled}}
-                    <form action="index.php" method="get">
-                        <input type="hidden" name="page" value="Mnt_Car"/>
-                        <input type="hidden" name="mode" value="UPD" />
-                        <input type="hidden" name="registro_id" value={{registro_id}} />
-                        <button type="submit">Editar</button>
-                    </form>
-                    {{endif ~edit_enabled}}
-                    {{if ~delete_enabled}}
-                    <form action="index.php" method="get">
-                        <input type="hidden" name="page" value="Mnt_Car"/>
-                        <input type="hidden" name="mode" value="DEL" />
-                        <input type="hidden" name="registro_id" value={{registro_id}} />
-                        <button type="submit">Eliminar</button>
-                    </form>
-                    {{endif ~delete_enabled}}
-                </td>
-            </tr>
-            {{endfor cars}}
-        </tbody>
-    </table>
 </section>
-
+<section class="WWList">
+  <table>
+    <thead>
+      <tr>
+        <th>Id registrado</th>
+        <th>Placa de carro</th>
+        <th>Modelo del carro</th>
+        <th>Año de carro</th>
+        <th>BIN de motor</th>
+        
+        <th>
+          {{if new_enabled}}
+          <button id="btnAdd">Nuevo</button>
+          {{endif new_enabled}}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      {{foreach cars}}
+      <tr>
+        <td>{{registro_id}}</td>
+        <td><a href="index.php?page=Mnt_Car&mode=DSP&registro_id={{registro_id}}">{{placa_carro}}</a></td>
+          <td>{{modelo_carro}}</td>
+           <td>{{year_carro}}</td>
+            <td>{{bin_carro}}</td>
+             
+        <td>
+          {{if ~edit_enabled}}
+          <form action="index.php" method="get">
+             <input type="hidden" name="page" value="Mnt_Car"/>
+              <input type="hidden" name="mode" value="UPD" />
+              <input type="hidden" name="registro_id" value={{registro_id}} />
+              <button type="submit">Editar</button>
+          </form>
+          {{endif ~edit_enabled}}
+          {{if ~delete_enabled}}
+          <form action="index.php" method="get">
+             <input type="hidden" name="page" value="Mnt_Car"/>
+              <input type="hidden" name="mode" value="DEL" />
+              <input type="hidden" name="registro_id" value={{registro_id}} />
+              <button type="submit">Eliminar</button>
+          </form>
+          {{endif ~delete_enabled}}
+        </td>
+      </tr>
+      {{endfor cars}}
+    </tbody>
+  </table>
+</section>
 <script>
    document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("btnAdd").addEventListener("click", function (e) {
