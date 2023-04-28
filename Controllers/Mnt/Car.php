@@ -28,9 +28,9 @@ class Car extends PublicController{
         "UPD" => "Editar %s (%s)",
         "DEL" => "Borrar %s (%s)"
     );
-    public function run() : void
+    public function run() :void
     {
-        try{
+        try {
             $this->page_loaded();
             if($this->isPostBack()){
                 $this->validatePostData();
@@ -39,7 +39,7 @@ class Car extends PublicController{
                 }
             }
             $this->render();
-        }  catch (Exception $error){
+        } catch (Exception $error) {
             unset($_SESSION["xssToken_Mnt_Car"]);
             error_log(sprintf("Controller/Mnt/Car ERROR: %s", $error->getMessage()));
             \Utilities\Site::redirectToWithMsg(
@@ -49,38 +49,38 @@ class Car extends PublicController{
         }
     }
 
-    private function page_loaded(){
+    private function page_loaded()
+    {
         if(isset($_GET['mode'])){
             if(isset($this->modes[$_GET['mode']])){
                 $this->viewData["mode"] = $_GET['mode'];
-            }else{
+            } else {
                 throw new Exception("Mode Not available");
             }
-        }else{
+        } else {
             throw new Exception("Mode not defined on Query Params");
         }
-        if($this->viewData["mode"] !== "INS"){
+        if($this->viewData["mode"] !== "INS") {
             if(isset($_GET['registro_id'])){
                 $this->viewData["registro_id"] = intval($_GET["registro_id"]);
-            }else{
+            } else {
                 throw new Exception("Id not found on Query Params");
             }
         }
     }
 
     private function validatePostData(){
-        if(isset($_POST["xxsToken"])){
+        if(isset($_POST["xssToken"])){
             if(isset($_SESSION["xssToken_Mnt_Car"])){
                 if($_POST["xssToken"] !== $_SESSION["xssToken_Mnt_Car"]){
                     throw new Exception("Invalid Xss Token no match");
                 }
-            }else {
+            } else {
                 throw new Exception("Invalid Xss Token on Session");
             }
-        }else {
+        } else {
             throw new Exception("Invalid Xss Token");
         }
-        
         if(isset($_POST["placa_carro"])){
             if(\Utilities\Validators::IsEmpty($_POST["placa_carro"])){
                 $this->viewData["has_errors"] = true;
@@ -89,7 +89,7 @@ class Car extends PublicController{
         } else {
             throw new Exception("placa_carro not present in form");
         }
-
+        
         if(isset($_POST["modelo_carro"])){
             if(\Utilities\Validators::IsEmpty($_POST["modelo_carro"])){
                 $this->viewData["has_errors"] = true;
@@ -98,7 +98,7 @@ class Car extends PublicController{
         } else {
             throw new Exception("modelo_carro not present in form");
         }
-
+        /* Por si acaso revisar esto Primero */
         if(isset($_POST["year_carro"])){
             if(\Utilities\Validators::IsEmpty($_POST["year_carro"])){
                 $this->viewData["has_errors"] = true;
@@ -127,8 +127,7 @@ class Car extends PublicController{
         }else {
             throw new Exception("registro_id not present in form");
         }
-
-        $this->viewData["placa_carro"] = $_POST["placa_carro"];
+            $this->viewData["placa_carro"] = $_POST["placa_carro"];
             $this->viewData["modelo_carro"] = $_POST["modelo_carro"];
             $this->viewData["year_carro"] = $_POST["year_carro"];
             $this->viewData["bin_carro"] = $_POST["bin_carro"];
@@ -145,39 +144,41 @@ class Car extends PublicController{
                 );
                 if($inserted > 0){
                     \Utilities\Site::redirectToWithMsg(
-                        $this->redirectTo,"Registro de carro creado exitosamente"
+                        $this->redirectTo,
+                        "Registro de carro Creada Exitosamente"
                     );
                 }
                 break;
-
             case "UPD":
                 $updated = \Dao\Mnt\Cars::update(
-                $this->viewData["placa_carro"],
-                $this->viewData["modelo_carro"],
-                $this->viewData["year_carro"],
-                $this->viewData["bin_carro"],
-                $this->viewData["registro_id"]
+                    $this->viewData["placa_carro"],
+                    $this->viewData["modelo_carro"],
+                    $this->viewData["year_carro"],
+                    $this->viewData["bin_carro"],
+                    $this->viewData["registro_id"]
                 );
                 if($updated > 0){
-                    Utilities\Site::redirectToWithMsg(
-                        $this->redirectTo, "Registro de carro actualizado correctamente"
+                    \Utilities\Site::redirectToWithMsg(
+                        $this->redirectTo,
+                        "Registro de carro Actualizado"
                     );
                 }
                 break;
-            
             case "DEL":
                 $deleted = \Dao\Mnt\Cars::delete(
                     $this->viewData["registro_id"]
                 );
                 if($deleted > 0){
                     \Utilities\Site::redirectToWithMsg(
-                        $this->redirectTo,"Registro de carro eliminado correctamente"
+                        $this->redirectTo,
+                        "Registro de carro Eliminada Exitosamente"
                     );
                 }
                 break;
-                
         }
     }
+
+
     private function render(){
         $xssToken = md5("CAR" . rand(0,4000) * rand(5000, 9999));
         $this->viewData["xssToken"] = $xssToken;
@@ -190,11 +191,18 @@ class Car extends PublicController{
             if(!$tmpCars){
                 throw new Exception("El Registro no existe en DB");
             }
+            \Utilities\ArrUtils::mergeFullArrayTo($tmpCars, $this->viewData);
             $this->viewData["modedsc"] = sprintf(
-                $this->modes[$this->viewData["mode"]],
-                $this->viewData["placa_carro"],
-                
-                $this->viewData["registro_id"]);
+            $this->modes[$this->viewData["mode"]],
+            $this->viewData["placa_carro"],
+            $this->viewData["registro_id"]
+            );
+            if(in_array($this->viewData["mode"], array("DSP","DEL"))){
+                $this->viewData["readonly"] = "readonly";
+            }
+            if($this->viewData["mode"] === "DSP") {
+                $this->viewData["show_action"] = false;
+            }
         }
         Renderer::render("mnt/car", $this->viewData);
     }
