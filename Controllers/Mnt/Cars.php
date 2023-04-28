@@ -17,3 +17,4 @@ class Cars extends PublicController{
         Renderer::render('mnt/cars',$viewData);
     }
 }
+?>

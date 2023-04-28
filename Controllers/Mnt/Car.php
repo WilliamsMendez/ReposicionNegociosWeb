@@ -178,6 +178,24 @@ class Car extends PublicController{
                 
         }
     }
-    
+    private function render(){
+        $xssToken = md5("CAR" . rand(0,4000) * rand(5000, 9999));
+        $this->viewData["xssToken"] = $xssToken;
+        $_SESSION["xssToken_Mnt_Car"] = $xssToken;
 
+        if($this->viewData["mode"] === "INS"){
+            $this->viewData["modedsc"] = $this->viewData["INS"];
+        }else {
+            $tmpCars = \Dao\Mnt\Cars::findById($this->viewData["registro_id"]);
+            if(!$tmpCars){
+                throw new Exception("El Registro no existe en DB");
+            }
+            $this->viewData["modedsc"] = sprintf(
+                $this->modes[$this->viewData["mode"]],
+                $this->viewData["placa_carro"],
+                
+                $this->viewData["registro_id"]);
+        }
+        Renderer::render("mnt/car", $this->viewData);
+    }
 }
