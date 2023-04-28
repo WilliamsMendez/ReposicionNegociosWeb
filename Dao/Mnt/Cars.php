@@ -21,5 +21,21 @@ Class Cars extends Table{
         return $rowsUpdated;
     }
 
-    
+    public static function delete (int $registro_id){
+        $sqlstr = "DELETE from car where registro_id=:registro_id";
+        $rowsDeleted = self::executeNonQuery($sqlstr, array("registro_id"=>$registro_id));
+        return $rowsDeleted;
+    }
+
+    public static function findAll(){
+        $sqlstr = "SELECT * from car";
+        return self::obtenerRegistros($sqlstr,array());
+    }
+
+    public static function findById(int $registro_id){
+        $sqlstr = "SELECT * from car where registro_id = :registro_id";
+        $row = self ::obtenerUnRegistro($sqlstr, array("registro_id" => $registro_id));
+        return $row;
+    }
 }
+?>
